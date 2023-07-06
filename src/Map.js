@@ -8,7 +8,6 @@ import { Row, Col, Form, Input, Card, Button } from "antd";
 
 
 
-let circle;
 
 function AnyReactComponent({ text }) {
   return (
@@ -48,6 +47,7 @@ export default class MapClass extends PureComponent {
     ]);
     this.autocomplete.addListener("place_changed", this.handlePlace);
   };
+
   handlePlace = () => {
     const addressObject = this.autocomplete.getPlace();
     if (addressObject.geometry.location) {
@@ -70,17 +70,13 @@ export default class MapClass extends PureComponent {
   };
 
   render() {
-    const apiIsLoaded = (map, maps) => {
-      circle = new maps.Circle({
-        center: this.state.center,
-      });
-    };
+ 
     return (
       <div>
         <Card>
           <Row>
             <Col span={12}>
-              <span>Google Map Location</span>
+              <span>Enter your location</span>
               <Script
                 url={
                   "https://maps.googleapis.com/maps/api/js?key=" +
