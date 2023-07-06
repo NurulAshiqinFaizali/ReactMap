@@ -1,32 +1,35 @@
-import logo from "./logo.svg";
 import React, { PureComponent } from "react";
 import "./Map.css";
-import { googleApiKey } from "./config/env";
+import { googleApiKey} from "./config/env";
 import Script from "react-load-script";
-import GoogleMapReact from "google-map-react";
-import { Row, Col, Form, Input, Card } from "antd";
+// import Googlemap from "google-map-react";
+import { GoogleMap, Marker, InfoWindow } from "@react-google-maps/api";
+import { Row, Col, Form, Input, Card, Button } from "antd";
+
+
+
+let circle;
 
 function AnyReactComponent({ text }) {
   return (
     <div style={{ color: "red" }}>
-      <img src={"/static/assets/ic_mdlloc.png"} width={30} />
+      <img src={"./marker.png"} width={15} />
     </div>
   );
 }
-export default class Map extends PureComponent {
+const defaultLocation = { lat: 3.1472 , lng: 101.6997,};
+export default class MapClass extends PureComponent {
   constructor(props) {
     super(props);
 
     this.state = {
       address: "",
-      lat: null,
-      lang: null,
+      center : defaultLocation
     };
 
     this.autocomplete = React.createRef();
   }
-
-  handleScriptLoad = () => {
+  load = () => {
     var options = {
       types: ["establishment"],
       componentRestrictions: { country: "my" },
@@ -43,62 +46,83 @@ export default class Map extends PureComponent {
       "name",
       "geometry.location",
     ]);
-    this.autocomplete.addListener("place_changed", this.handlePlaceSelect);
+    this.autocomplete.addListener("place_changed", this.handlePlace);
   };
-
-  handlePlaceSelect = () => {
+  handlePlace = () => {
     const addressObject = this.autocomplete.getPlace();
-    const address = addressObject.address_components;
-
-    if (address) {
-      this.setState({
-        address: addressObject.name + ", " + addressObject.formatted_address,
+    if (addressObject.geometry.location) {
+      console.log('address ob', addressObject)
+      const address =  addressObject.name + ", " + addressObject.formatted_address;
+      var lat_place = addressObject.geometry.location.lat();
+      var lang_place = addressObject.geometry.location.lng();
+      this.formRef.setFieldsValue({
+        address: address,
       });
     }
+    this.setState({
+      lat: lat_place,
+      lng: lang_place,
+    });
+    this.setState({
+      center: { lat: lat_place, lng:lang_place},
+    });
+    this.forceUpdate()
   };
 
   render() {
+    const apiIsLoaded = (map, maps) => {
+      circle = new maps.Circle({
+        center: this.state.center,
+      });
+    };
     return (
       <div>
         <Card>
           <Row>
-                  <Col span={6}>
-                    <span className="required form-label">Location</span>
-                    <Script
-                      url={
-                        'https://maps.googleapis.com/maps/api/js?key=' +
-                        googleApiKey +
-                        '&libraries=places'
-                      }
-                      onLoad={this.handleScriptLoad}
-                    />
-                    <Form.Item
-                      style={{ marginBottom: 0 }}
-                      name="address"
-                      initialValue={this.state.address}
-                    >
-                      <Input
-                        id="autocomplete"
-                        placeholder="Search Your Location"
-                      />
-                    </Form.Item>
-                  </Col>
-                </Row>
+            <Col span={12}>
+              <span>Google Map Location</span>
+              <Script
+                url={
+                  "https://maps.googleapis.com/maps/api/js?key=" +
+                  googleApiKey +
+                  "&libraries=places"
+                }
+                onLoad={this.load}
+              />
+              <Form
+                name=""
+                ref={(ref) => (this.formRef = ref)}
+              >
+                <Form.Item
+                  style={{ marginBottom: 0 }}
+                  name="address"
+                  initialValue={this.state.address}
+                >
+                  <Input id="autocomplete" placeholder="Search Your Location" />
+                </Form.Item>
+                <Col span={12}>
+                </Col>
+              </Form>
+            </Col>
+          </Row>
         </Card>
-        <Card>
-          <GoogleMapReact
-            style={{ height: 300 }}
-            // key={'maps'}
-            bootstrapURLKeys={{ key: googleApiKey, language: "en" }}
-            defaultCenter={{
-              lat: 3.146678,
-              lng: 101.699129,
-            }}
-            defaultZoom={13}
+
+<Card>
+        
+        <GoogleMap
+          center={this.state.center}
+          zoom={20}
+          mapContainerStyle={{ height: "400px", width: "800px" }}
+        >
+          <Marker
+            //onLoad={onLoad}
+            position={this.state.center}
           >
-            <AnyReactComponent lat={this.state.lat} lng={this.state.lang} />
-          </GoogleMapReact>
-        </Card>
+          </Marker>
+        </GoogleMap>
+
+
+     </Card>
       </div>
     );
   }

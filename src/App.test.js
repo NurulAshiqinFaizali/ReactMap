@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import Map from './App';
+import Map from './Map';
 
 test('renders learn react link', () => {
   render(<Map />);
