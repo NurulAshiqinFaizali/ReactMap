@@ -1,8 +1,9 @@
 import { render, screen } from '@testing-library/react';
-import App from './App';
+import Map from './App';
+import { googleApiKey } from '../config/env'
 
 test('renders learn react link', () => {
-  render(<App />);
+  render(<Map />);
   const linkElement = screen.getByText(/learn react/i);
   expect(linkElement).toBeInTheDocument();
 });
