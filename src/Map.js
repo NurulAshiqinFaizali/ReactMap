@@ -2,10 +2,9 @@ import React, { PureComponent } from "react";
 import "./Map.css";
 import { googleApiKey} from "./config/env";
 import Script from "react-load-script";
-// import Googlemap from "google-map-react";
+import GoogleMapReact from "google-map-react";
 import { GoogleMap, Marker, InfoWindow } from "@react-google-maps/api";
 import { Row, Col, Form, Input, Card, Button } from "antd";
-
 
 
 
@@ -23,7 +22,9 @@ export default class MapClass extends PureComponent {
 
     this.state = {
       address: "",
-      center : defaultLocation
+      center : defaultLocation,
+      lat: 3.1472,
+      lng: 101.6997
     };
 
     this.autocomplete = React.createRef();
@@ -104,8 +105,8 @@ export default class MapClass extends PureComponent {
         </Card>
 
 <Card>
-        
-        <GoogleMap
+        {/* dynamic */}
+        {/* <GoogleMap
           center={this.state.center}
           zoom={20}
           mapContainerStyle={{ height: "400px", width: "800px" }}
@@ -115,9 +116,21 @@ export default class MapClass extends PureComponent {
             position={this.state.center}
           >
           </Marker>
-        </GoogleMap>
+        </GoogleMap> */}
 
+{/* static */}
+        <GoogleMapReact
+         style={{ height: 300 }}
+         key={'maps'}
+         bootstrapURLKeys={{ key: googleApiKey }}
+         defaultCenter={this.state.center
+         }
+         defaultZoom={13}
+        >
+         <AnyReactComponent lat={this.state.lat} lng = {this.state.lng}>
 
+         </AnyReactComponent>
+        </GoogleMapReact>
      </Card>
       </div>
     );
